@@ -7,12 +7,13 @@
 <style>
 green { color:green;}
 brown { color:brown;}
+gold { color:gold;}
 </style>
 
 </head>
 <body>
-
-<h1>Punkt-Pyramide</h1> 
+<center>
+<h1>Parametric Christmas Tree</h1> 
 
 <input type="number" id="eingabefeld">   
 
@@ -21,50 +22,49 @@ brown { color:brown;}
 <button type="button"
 onclick= "buttonclick()">  
 Create Christmas tree.</button>
-
+</center>
 
 <script>
 
-function pyramide(n) {
-    p ="<tt><green>";                  //schriftart spezifikation damit punkte nicht besonders schmal wie sonst im text sind, sondern gleich viel platz einnehmen
-    for (i=1;i<=n;i++){           // for schleife die über n zeilen geht
-        for (j=1;j<=2*n;j++){      //// for schleife die über n spalten geht
-            if ((j>n-i)&&(j<n+i)) {
-                p += "*";
-            } else {
-                p += "&nbsp";
-            }
-        }
-        p += "<br>";
-    }
-    p += "</green>";
-    p += "<brown>";
+function slowbuild(n,m) {
+    p= "</tt>";
+    p= "</brown>"+p;
     for (i=1;i<=n/4;i++){  
-        for (j=1;j<=2*n;j++){      //// for schleife die über n spalten geht
+        for (j=1;j<=2*n;j++){      
             if ((j>n-n/8)&&(j<n+n/8)) {
-                p += "█";
+                p= "█"+p;
             } else {
-                p += "&nbsp";
+                p= "&nbsp"+p;
             }
         }
-        p += "<br>";
+        p= "<br>"+p;
     }
-    p += "</brown>";
-    p +=  "</tt>";
-    return p;
-    
-}
+    p= "<brown>"+p;
+    p ="</green>"+p;
+    needlecount = 0;
+    for (i=1;i<=n;i++){          
+        for (j=1;j<=2*n;j++){     
+            if ((j>=i)&&(j<=2*n-i)&&(needlecount<m)) {
+                p= "*"+p;
+                needlecount += 1;
+            } else {
+                p= "&nbsp"+p;           //überall p= ...+p damit es das rückwärts aufbaut (aufbauen), anstatt p+= ... (anhängen))
+            }
+        }
+        p= "<br>"+p;
+    }
+    p= "<green>"+p;
+    p= "<tt>"+p;
 
-function pyramide2(n) {
-    p ="<tt>";                  //schriftart spezifikation damit punkte nicht besonders schmal wie sonst im text sind, sondern gleich viel platz einnehmen
-    stockwerk = "";
-    for (i=1;i<=n;i++){
-        stockwerk += ".";
-        p += stockwerk + "<br>";  // p+=  : zur variablen p wird folgendes angehängt
-    }
-    p += "</tt>";
-    return p;
     
+    if (m==needlecount) {
+        document.getElementById('ausgabe').innerHTML = p;
+        setTimeout(slowbuild, 15, n, m+1);
+    } else {
+        document.getElementById('ausgabe').innerHTML =
+        "<gold>Merry Christmas</gold>"+p;
+        
+    }
 }
 
 function buttonclick() {
@@ -73,7 +73,7 @@ function buttonclick() {
         document.getElementById('ausgabe').innerHTML = "Keine Eingabe.";
         return;
     }
-    document.getElementById('ausgabe').innerHTML = pyramide(parseInt(n)); 
+    slowbuild(parseInt(n),0); 
 }
 
 
