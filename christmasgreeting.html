@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<!--optional: <header> with author, date, encoding, formatting..--> 
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, intialscale=1">  
+<style>
+green { color:green;}
+brown { color:brown;}
+</style>
+
+</head>
+<body>
+
+<h1>Punkt-Pyramide</h1> 
+
+<input type="number" id="eingabefeld">   
+
+<p id="ausgabe"></p>
+
+<button type="button"
+onclick= "buttonclick()">  
+Create Christmas tree.</button>
+
+
+<script>
+
+function pyramide(n) {
+    p ="<tt><green>";                  //schriftart spezifikation damit punkte nicht besonders schmal wie sonst im text sind, sondern gleich viel platz einnehmen
+    for (i=1;i<=n;i++){           // for schleife die über n zeilen geht
+        for (j=1;j<=2*n;j++){      //// for schleife die über n spalten geht
+            if ((j>n-i)&&(j<n+i)) {
+                p += "*";
+            } else {
+                p += "&nbsp";
+            }
+        }
+        p += "<br>";
+    }
+    p += "</green>";
+    p += "<brown>";
+    for (i=1;i<=n/4;i++){  
+        for (j=1;j<=2*n;j++){      //// for schleife die über n spalten geht
+            if ((j>n-n/8)&&(j<n+n/8)) {
+                p += "█";
+            } else {
+                p += "&nbsp";
+            }
+        }
+        p += "<br>";
+    }
+    p += "</brown>";
+    p +=  "</tt>";
+    return p;
+    
+}
+
+function pyramide2(n) {
+    p ="<tt>";                  //schriftart spezifikation damit punkte nicht besonders schmal wie sonst im text sind, sondern gleich viel platz einnehmen
+    stockwerk = "";
+    for (i=1;i<=n;i++){
+        stockwerk += ".";
+        p += stockwerk + "<br>";  // p+=  : zur variablen p wird folgendes angehängt
+    }
+    p += "</tt>";
+    return p;
+    
+}
+
+function buttonclick() {
+    n = document.getElementById('eingabefeld').value;    // hol dir wert (value) aus eingabefeld s. z.14
+    if (n=="") {
+        document.getElementById('ausgabe').innerHTML = "Keine Eingabe.";
+        return;
+    }
+    document.getElementById('ausgabe').innerHTML = pyramide(parseInt(n)); 
+}
+
+
+
+
+</script>
+
+</body>
+</html>
