@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, intialscale=1">    
+<meta name="author" content="Anna Haenle">
+</head>
+<body>
+<input type="number" id="eingabefeld1">  
+<input type="number" id="eingabefeld2">  
+<p id="ausgabe" style="font-size:30px"></p> <br>
+</p>
+<button type="button"
+onclick= "change()">  
+Neues Spiel starten.</button>
+<script>
+var n =0;
+var m =0;
+var stonepositions =[[]];
+var player_playing = 1;
+
+function generatefield() {
+    var spielfeld = "";
+    
+    if ((n<1)||(m<1)) {
+        return spielfeld;
+    }
+    
+    spielfeld +="<tt>"+"<br>";
+    for (i=0;i<n;i++){                                 
+        spielfeld += "&nbsp;<span onclick=\"play("+i+")\">&nbsp;▼&nbsp;</span>";               
+    }
+    spielfeld += "<br>";
+    spielfeld +="┏";
+    for (i=0;i<n-1;i++) {
+        spielfeld += "━━━┳";
+    }
+    spielfeld += "━━━┓"+"<br>";
+
+    for (i=0;i<m;i++) {
+
+        for (j=0;j<n;j++) {
+            spielfeld +="┃&nbsp;"
+            if (stonepositions[i][j]==1){
+                spielfeld += "<span style=\"color: red;\">◉</span>"
+            } else if (stonepositions[i][j]==2){
+                spielfeld += "<span style=\"color: blue;\">◉</span>"
+            } else {
+                spielfeld += "&nbsp;"
+            }
+            spielfeld += "&nbsp;"
+        }   
+        spielfeld +="┃"+"<br>";
+
+        if (i<m-1) {
+            spielfeld +="┣";
+            for (j=1;j<n;j++) {
+                spielfeld += "━━━╋";
+            }
+            spielfeld +="━━━┫"+"<br>";
+        }
+    }
+    
+    spielfeld +="┗";
+    for (i=1;i<n;i++){
+        spielfeld += "━━━┻";
+    }
+    spielfeld += "━━━┛"+"<br>";
+
+    spielfeld +="</tt>";
+    
+    return spielfeld;
+}
+
+function change() {
+    n= document.getElementById("eingabefeld1").value*1; 
+    m= document.getElementById("eingabefeld2").value*1;
+    // holt sich Werte aus Eingabefenstern
+    stonepositions = Array(m);                            // Zeilen des arrays wurden angelegt (m ist Variable fuer Zeilen)
+    for (i=0;i<m;i++){                                    // 0 weil, arrays an der Stelle 0 indiziert werden
+        stonepositions[i] = Array(n);                     // Array(n) -> array mit der groeße n. Spalten des arrays wurden in der for-Scheife angelegt (n ist Variable fuer Spalten).
+    }
+    document.getElementById("ausgabe").innerHTML = generatefield();
+}
+
+function play(x) {                // Stein wird in Spalte x geworfen
+    if (player_playing==0){
+    		return;
+    }
+    for (i=m-1;i>=0;i--){         // m-1: weil wir im array von 0 anfangen zu zaehlen
+        if (stonepositions[i][x]==1){
+            continue;
+        }       
+        if (stonepositions[i][x]==2){
+            continue;
+        }
+        console.log(i,x);
+        stonepositions[i][x] = player_playing;    // stein wird in spalte von 2 dimensionales array geworfen
+        break;
+    }
+    document.getElementById("ausgabe").innerHTML = generatefield();  // laed das feld neu mit spielstein drin
+    if (check_win(stonepositions,n,m)) {
+      document.getElementById("ausgabe").innerHTML += "<br>";
+      document.getElementById("ausgabe").innerHTML += "Spieler "+player_playing+" hat gewonnen";
+      
+      player_playing=0; 
+    }
+    if (player_playing == 1) {      //wenn player1 dran war
+      player_playing = 2;          //dann kommt player2
+    } else if (player_playing == 2) {
+      player_playing = 1;          //wenn nicht, dann kommt player1
+    }
+    console.log(player_playing);
+}
+
+function check_win(stonepositions,n,m){  
+//JEDE ZEILE VON LINKS NACH RECHTS
+	for (i=0;i<m;i++){    
+    // mit der "Farbe" 0 und einem Zähler 0 anfangen
+    var color = 0;
+    var counter= 0;
+ 		for(j=0;j<n;j++) {
+      // danach zählen wie oft die selbe Farbe wieder kommt
+      if ((stonepositions[i][j]==1)&&(color==1)){ 
+    	  counter++; // Wenn ein Spielstein von Spieler 1 gesehen wird und Farbe 1 war, dann Zähler hochzählen
+      }
+      else if ((stonepositions[i][j]==2)&&(color==2)){
+     	 counter++; // Wenn ein Spielstein von Spieler 2 gesehen wird und Farbe 2 war, dann Zählen hochzählen
+      }
+      if (stonepositions[i][j]!=color){ 
+        counter=1;
+        color=stonepositions[i][j]; //color wird mit stonepositions [i][j] auf die neu angetroffene farbe gesetzt
+      }
+     if (counter==4){
+      // Wenn der Zähler an 4 angekommen ist, hat man offensichtlich vier in einer Reihe gefunden
+       return stonepositions[i][j];
+     }
+    }
+  }
+//JEDE SPALTE VON OBEN NACH UNTEN
+  for (i=0;i<n;i++){    //schleife ueber die horizontale
+    // mit der "Farbe" 0 und einem Zähler 0 anfangen
+    var color = 0;
+    var counter= 0;
+ 		for(j=0;j<m;j++) { //damit gehen wir immer eins runter
+      // danach zählen wie oft die selbe Farbe wieder kommt
+      if ((stonepositions[j][i]==1)&&(color==1)){ 
+    	  counter++; // Wenn ein Spielstein von Spieler 1 gesehen wird und Farbe 1 war, dann Zähler hochzählen
+      }
+      else if ((stonepositions[j][i]==2)&&(color==2)){
+     	 counter++; // Wenn ein Spielstein von Spieler 2 gesehen wird und Farbe 2 war, dann Zählen hochzählen
+      }
+      if (stonepositions[j][i]!=color){ 
+        counter=1;
+        color=stonepositions[j][i]; //color wird mit stonepositions [j][i] auf die neu angetroffene farbe gesetzt
+      }
+     if (counter==4){
+      // Wenn der Zähler an 4 angekommen ist, hat man offensichtlich vier in einer Reihe gefunden
+       return stonepositions[j][i];
+     }
+    }
+  }
+//DIAGONAL VON LINKS OBEN NACH RECHTS UNTEN
+  for (var k =m-1,l=0;l<n;){  //k = hoch, l= nach rechts
+//Nehme zwei Variablen, k und l beispielsweise.
+//Beginne beim Feld links unten.
+    var color = 0;
+    var counter= 0;
+
+ 		for(i=l,j=k;(j<m)&&(i<n);(i++,j++)) {  
+      // danach zählen wie oft die selbe Farbe wieder kommt
+    	if ((stonepositions[j][i]==1)&&(color==1)){ 
+    	  counter++; // Wenn ein Spielstein von Spieler 1 gesehen wird und Farbe 1 war, dann Zähler hochzählen
+      }
+      else if ((stonepositions[j][i]==2)&&(color==2)){
+     	  counter++; // Wenn ein Spielstein von Spieler 2 gesehen wird und Farbe 2 war, dann Zählen hochzählen
+      }
+      if (stonepositions[j][i]!=color){ 
+        counter=1;
+        color=stonepositions[j][i]; //color wird mit stonepositions [j][i] auf die neu angetroffene farbe gesetzt
+      }
+      if (counter==4){
+      	// Wenn der Zähler an 4 angekommen ist, hat man offensichtlich vier in einer Reihe gefunden
+      	return stonepositions[j][i];
+      }    
+    }
+    if (k>0){
+      k--;
+    } else {
+      l++;
+//So lange k größer 0 ist mache k eins kleiner, damit gehen wir ein Feld vertikal.
+//Sobald k gleich 0 ist mache l eins größer bis l ganz rechts angekommen ist.
+    }   
+  }
+//DIAGONAL VON LINKS UNTEN NACH RECHTS OBEN
+  for (var k =0,l=0;l<n;){  //k = hoch, l= nach rechts
+//Nehme zwei Variablen, k und l beispielsweise.
+//Beginne beim Feld links unten.
+    var color = 0;
+    var counter= 0;
+
+ 		for(i=l,j=k;(j>=0)&&(i<n);(i++,j--)) {  
+      // danach zählen wie oft die selbe Farbe wieder kommt
+    	if ((stonepositions[j][i]==1)&&(color==1)){ 
+    	  counter++; // Wenn ein Spielstein von Spieler 1 gesehen wird und Farbe 1 war, dann Zähler hochzählen
+      }
+      else if ((stonepositions[j][i]==2)&&(color==2)){
+     	  counter++; // Wenn ein Spielstein von Spieler 2 gesehen wird und Farbe 2 war, dann Zählen hochzählen
+      }
+      if (stonepositions[j][i]!=color){ 
+        counter=1;
+        color=stonepositions[j][i]; //color wird mit stonepositions [j][i] auf die neu angetroffene farbe gesetzt
+      }
+      if (counter==4){
+      	// Wenn der Zähler an 4 angekommen ist, hat man offensichtlich vier in einer Reihe gefunden
+      	return stonepositions[j][i];
+      }    
+    }
+    // solange nach unten bis wir unten angekommen sind und dann nach rechts
+    if (k<m-1){ 
+      k++;
+    } else {
+      l++;
+    }   
+  }
+  return 0;
+}
+
+</script>
+</body>
+</html>
